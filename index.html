@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Jogo da Memória - 1 fase</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <style>
+     body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  align-items: center;
+  background-image: url("image2.png");
+  background-size: cover;
+  background-position: center;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  font-size: 36px;
+  color: #000;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+
+#game-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  width: 600px;
+  margin-bottom: 10px;
+  margin-left: -400px;
+}
+
+.card {
+  position: relative;
+  border-radius: 5px;
+  overflow: hidden;
+  width: 250px;
+  height: 0;
+  padding-bottom: 100%; /* Aumente o valor para aumentar o tamanho da carta */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  transition: transform 0.5s ease-in-out;
+  cursor: pointer;
+}
+
+.card.flip {
+  transform: rotateY(180deg);
+}
+
+.card img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 5px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.notification.show {
+  opacity: 1;
+}
+
+.seta {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  background-image: url("caminho-para-a-seta.png");
+  background-size: cover;
+}
+
+
+.button-next-level {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-next-level:hover {
+  background-color: #45a049;
+}
+
+.button-next-level:active {
+  background-color: #3e8e41;
+}
+
+
+    </style>
+    <h1>Jogo da Memória - 1 fase</h1>
+
+    <div id="game-board"></div>
+
+    <script>
+      var params = new URLSearchParams(window.location.search);
+      var nome = params.get("nome");
+      var turma = params.get("turma");
+      
+      const images = [
+        "nivel1/ciclopropano.jpg",
+        "nivel1/propeno.jpg",
+        "nivel1/metilpropano.jpg",
+        "nivel1/butano.jpg",
+        "nivel1/pent1eno.jpg",
+        "nivel1/ciclopentano.jpg",
+        "nivel1/ácido2 metilpropanoico.jpg",
+        "nivel1/acidobutanoico.jpg",
+        "nivel1/etil-propilamina.jpg",
+         "nivel1/metil-butilamina.jpg",
+         "nivel1/buteno.jpg",
+         "nivel1/2buteno.jpg",
+         "nivel1/1propanol.jpg",
+         "nivel1/2propanol.jpg",
+         "nivel1/1butanol.jpg",
+         "nivel1/2butanol.jpg"
+      ];
+      
+      
+      const cards = images.slice();
+      
+      let firstCard = null;
+      let secondCard = null;
+      let lockBoard = false;
+      
+      cards.sort(() => Math.random() - 0.5);
+      
+      const gameBoard = document.getElementById("game-board");
+      cards.forEach((image) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        const img = document.createElement("img");
+        img.src = "socrates.png";
+        img.setAttribute("data-image", image);
+        card.appendChild(img);
+        card.addEventListener("click", flipCard);
+        gameBoard.appendChild(card);
+      });
+      
+      function flipCard() {
+        if (lockBoard) return;
+        if (this === firstCard) return;
+      
+        const clickedImage = this.querySelector("img");
+      
+        clickedImage.src = clickedImage.getAttribute("data-image");
+      
+        this.classList.add("flip");
+      
+        if (!firstCard) {
+          firstCard = this;
+          return;
+        }
+      
+        secondCard = this;
+        lockBoard = true;
+      
+        checkForMatch();
+      }
+      
+      function checkForMatch() {
+        const firstImage = firstCard.querySelector("img").getAttribute("data-image");
+        const secondImage = secondCard.querySelector("img").getAttribute("data-image");
+      
+        if ((firstImage === "nivel1/ciclopropano.jpg" && secondImage === "nivel1/propeno.jpg") || 
+            (firstImage === "nivel1/propeno.jpg" && secondImage === "nivel1/ciclopropano.jpg")) {
+          handleMatch();
+        }   
+        if ((firstImage === "nivel1/metilpropano.jpg" && secondImage === "nivel1/butano.jpg") || 
+            (firstImage === "nivel1/butano.jpg" && secondImage === "nivel1/metilpropano.jpg")) {
+          handleMatch();
+        }
+      
+        if ((firstImage === "nivel1/pent1eno.jpg" && secondImage === "nivel1/ciclopentano.jpg") || 
+            (firstImage === "nivel1/ciclopentano.jpg" && secondImage === "nivel1/pent1eno.jpg")) {
+          handleMatch();
+        }
+        
+        if ((firstImage === "nivel1/ácido2 metilpropanoico.jpg" && secondImage === "nivel1/acidobutanoico.jpg") || 
+            (firstImage === "nivel1/acidobutanoico.jpg" && secondImage === "nivel1/ácido2 metilpropanoico.jpg")) {
+          handleMatch();
+        } 
+        if ((firstImage === "nivel1/etil-propilamina.jpg" && secondImage === "nivel1/metil-butilamina.jpg") || 
+            (firstImage === "nivel1/metil-butilamina.jpg" && secondImage === "nivel1/etil-propilamina.jpg" )) {
+          handleMatch();
+        } 
+        if ((firstImage === "nivel1/buteno.jpg" && secondImage === "nivel1/2buteno.jpg") || 
+            (firstImage === "nivel1/2buteno.jpg" && secondImage === "nivel1/buteno.jpg")) {
+          handleMatch();
+        } 
+        if ((firstImage === "nivel1/1propanol.jpg" && secondImage === "nivel1/2propanol.jpg") || 
+            (firstImage === "nivel1/2propanol.jpg" && secondImage === "nivel1/1propanol.jpg")) {
+          handleMatch();
+        } 
+        if ((firstImage === "nivel1/1butanol.jpg" && secondImage === "nivel1/2butanol.jpg") || 
+            (firstImage === "nivel1/2butanol.jpg" && secondImage === "nivel1/1butanol.jpg")) {
+          handleMatch();
+        } 
+        
+        else {
+          handleMismatch();
+        }
+      }
+      
+      
+      function handleMatch() {
+  const clickedImages = document.querySelectorAll(".flip img");
+
+  clickedImages.forEach((image) => {
+    image.parentElement.classList.add("match");
+  });
+
+  showNotification("Acertou!!!");
+
+  resetBoard();
+  checkWin(); // Adicionado aqui
+}
+
+      
+      function handleMismatch() {
+        setTimeout(() => {
+          const clickedImages = document.querySelectorAll(".flip img");
+      
+          clickedImages.forEach((image) => {
+            image.src = "socrates.png";
+          });
+      
+          resetBoard();
+        }, 2000);
+      }
+      
+      function resetBoard() {
+        [firstCard, secondCard, lockBoard] = [null, null, false];
+        const flippedCards = document.querySelectorAll(".flip");
+        flippedCards.forEach((card) => {
+          card.classList.remove("flip");
+        });
+      }
+      
+      function showNotification(message) {
+        const notification = document.createElement("div");
+        notification.classList.add("notification");
+        notification.innerText = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          notification.classList.add("show");
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 2000);
+        }, 100);
+      }
+      
+      function checkWin() {
+  const matchedCards = document.querySelectorAll(".match");
+  if (matchedCards.length === 16) {
+    const chemistName = "Nome do Químico"; // Substitua pelo nome do químico desejado
+
+    const notification = document.createElement("div");
+    notification.classList.add("notification");
+    notification.innerText = chemistName + " é você?";
+    document.body.appendChild(notification);
+
+    const nextLevelButton = document.createElement("button");
+    nextLevelButton.innerText = "Ir para o próximo nível";
+    nextLevelButton.classList.add("button-next-level");
+    nextLevelButton.addEventListener("click", function () {
+      window.location.href = "segunda.html";
+    });
+
+    const gameContainer = document.getElementById("game-board");
+    gameContainer.appendChild(nextLevelButton);
+  }
+}
+
+
+          </script>
+
+  </body>
+  
+</html>

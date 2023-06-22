@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Página de Login</title>
+  <style>
+    .container {
+      width: 300px;
+      margin: 0 auto;
+      margin-top: 100px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .form-group input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="text" id="email" placeholder="Digite seu email institucional">
+        <div id="email-error" class="error-message"></div>
+      </div>
+      <div class="form-group">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" placeholder="Digite seu CPF">
+        <div id="password-error" class="error-message"></div>
+      </div>
+      <div class="form-group">
+        <input type="submit" value="Entrar">
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("login-form").addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent form submission
+
+      var emailInput = document.getElementById("email");
+      var passwordInput = document.getElementById("password");
+
+      var email = emailInput.value;
+      var password = passwordInput.value;
+
+      var emailError = document.getElementById("email-error");
+      var passwordError = document.getElementById("password-error");
+
+      emailError.innerHTML = "";
+      passwordError.innerHTML = "";
+
+      if (email.trim() === "") {
+        emailError.innerHTML = "Informe o email institucional";
+      } else if (!isValidEmail(email)) {
+        emailError.innerHTML = "Email inválido";
+      } else if (!isInstitutionalEmail(email)) {
+        emailError.innerHTML = "Email deve ser do IFMS";
+      }
+
+      if (password.trim() === "") {
+        passwordError.innerHTML = "Informe o CPF";
+      } else if (!isValidCPF(password)) {
+        passwordError.innerHTML = "CPF inválido";
+      } else {
+        window.location.href = "index.html";
+
+        emailInput.value = "";
+        passwordInput.value = "";
+      }
+    });
+
+    function isValidEmail(email) {
+      // Expressão regular para validar o formato do email
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    function isInstitutionalEmail(email) {
+      // Verificar se o email é do IFMS ou do Estudante IFMS
+      return email
+      .endsWith("@ifms.edu.br") || email.endsWith("@estudante.ifms.edu.br");
+}
+
+function isValidCPF(cpf) {
+  // Expressão regular para validar o formato do CPF (11 dígitos numéricos)
+  var cpfRegex = /^\d{11}$/;
+  return cpfRegex.test(cpf);
+}
+  </script>
+</body>
+</html>
